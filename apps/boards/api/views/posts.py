@@ -1,11 +1,19 @@
-from apps.boards.api.serializers.posts import post_serializer
+from apps.boards.api.serializers.posts import (
+    post_serializer,
+    post_with_comment_serializer,
+)
 from apps.boards.exceptions import data as exception_data
 from apps.boards.exceptions import posts as post_error
 from apps.boards.selectors.posts import (
-    get_post_by_id_and_board_id,
     get_post_queryset_by_board_id,
+    get_post_with_comment_by_id_and_board_id,
 )
-from apps.boards.services.posts import create_post, update_post, delete_post
+from apps.boards.services.posts import (
+    async_update_post_view_count,
+    create_post,
+    delete_post,
+    update_post,
+)
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,19 +32,20 @@ class PostListCreate(APIView):
     def get(self, request, *args, **kwrags) -> Response:
         """
         해당 게시판에 해당하는 게시글 목록을 반환합니다.
+        QueryStrings:
+            page: default 1
+            limit: default 10
         Returns:
             200: success
         """
+        page = int(request.GET.get("page", 1))
+        limit = int(request.GET.get("limit", 10))
+        post_queryset = get_post_queryset_by_board_id(
+            board_id=int(self.kwargs.get("board_id"))
+        )[(page * limit) - limit:limit * page]
         return Response(
             status=status.HTTP_200_OK,
-            data={
-                "posts": [
-                    post_serializer(post=post)
-                    for post in get_post_queryset_by_board_id(
-                        board_id=int(self.kwargs.get("board_id"))
-                    )
-                ]
-            },
+            data={"posts": [post_serializer(post=post) for post in post_queryset]},
         )
 
     def post(self, request, *args, **kwargs) -> Response:
@@ -75,13 +84,16 @@ class PostRetrieveUpdateDestroy(APIView):
             404: NotFound
         """
         try:
-            post = get_post_by_id_and_board_id(
+            post = get_post_with_comment_by_id_and_board_id(
                 post_id=int(self.kwargs.get("post_id")),
                 board_id=int(self.kwargs.get("board_id")),
             )
+            async_update_post_view_count.apply_async([post.id])
         except post_error.NotFoundPostError:
             raise exception_data.Http404NotFoundPostException
-        return Response(status=status.HTTP_200_OK, data=post_serializer(post=post))
+        return Response(
+            status=status.HTTP_200_OK, data=post_with_comment_serializer(post=post)
+        )
 
     def put(self, request, *args, **kwrags) -> Response:
         """

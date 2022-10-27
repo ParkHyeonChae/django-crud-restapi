@@ -1,6 +1,8 @@
 from apps.boards.exceptions import posts as post_error
 from apps.boards.models.posts import Post
 from apps.boards.selectors.posts import get_post_by_id_and_user_id_and_board_id
+from config.celery import app as celery
+from django.db.models import F
 from django.utils import timezone
 
 
@@ -48,4 +50,12 @@ def delete_post(user_id: int, post_id: int, board_id: int) -> None:
     )
     post.deleted_at = timezone.now()
     post.save()
+    return None
+
+
+@celery.task(bind=True)
+def async_update_post_view_count(self, post_id: int) -> None:
+    """async update post view count service"""
+
+    Post.objects.filter(id=post_id).update(view_count=F("view_count") + 1)
     return None
