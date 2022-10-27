@@ -44,7 +44,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     dormanted_at = models.DateTimeField(null=True)
     deactivated_at = models.DateTimeField(null=True)
     updated_at = models.DateTimeField(null=True)
-    created_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField()
 
     class Meta:
         db_table = "user"
