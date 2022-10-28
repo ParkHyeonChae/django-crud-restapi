@@ -1,6 +1,7 @@
 from apps.boards.api.serializers.posts import (
+    post_detail_serializer,
+    post_list_serializer,
     post_serializer,
-    post_with_comment_serializer,
 )
 from apps.boards.exceptions import data as exception_data
 from apps.boards.exceptions import posts as post_error
@@ -48,7 +49,7 @@ class PostListCreate(APIView):
         )[(page * limit) - limit:limit * page]
         return Response(
             status=status.HTTP_200_OK,
-            data={"posts": [post_serializer(post=post) for post in post_queryset]},
+            data={"posts": [post_list_serializer(post=post) for post in post_queryset]},
         )
 
     def post(self, request, *args, **kwargs) -> Response:
@@ -97,7 +98,7 @@ class PostRetrieveUpdateDestroy(APIView):
         except post_error.NotFoundPostError:
             raise exceptions.NotFound(**exception_data.HTTP_404_NOT_FOUND_POST)
         return Response(
-            status=status.HTTP_200_OK, data=post_with_comment_serializer(post=post)
+            status=status.HTTP_200_OK, data=post_detail_serializer(post=post)
         )
 
     def put(self, request, *args, **kwrags) -> Response:
@@ -106,7 +107,8 @@ class PostRetrieveUpdateDestroy(APIView):
         Returns:
             200: success
             400: title, content 바디 값이 None일 시
-            404: NotFound
+            404: Not Found
+            403: 본인의 게시글이 아닌 경우
         """
         try:
             post = update_post(
@@ -118,6 +120,10 @@ class PostRetrieveUpdateDestroy(APIView):
             )
         except post_error.NotFoundPostError:
             raise exceptions.NotFound(**exception_data.HTTP_404_NOT_FOUND_POST)
+        except post_error.PermissionDeniedUpdatePostError:
+            raise exceptions.PermissionDenied(
+                **exception_data.HTTP_403_PERMISSION_DENIED_UPDATE_POST
+            )
         except (post_error.RequiredPostTitleError, post_error.RequiredPostContentError):
             raise exceptions.BadRequest(**exception_data.HTTP_400_INVALID_POST_BODY)
         return Response(status=status.HTTP_200_OK, data=post_serializer(post=post))
@@ -127,7 +133,8 @@ class PostRetrieveUpdateDestroy(APIView):
         본인의 게시글을 삭제합니다.
         Returns:
             204: success
-            404: NotFound
+            404: Not Found
+            403: 본인의 게시글이 아닌 경우
         """
         try:
             delete_post(
@@ -137,4 +144,8 @@ class PostRetrieveUpdateDestroy(APIView):
             )
         except post_error.NotFoundPostError:
             raise exceptions.NotFound(**exception_data.HTTP_404_NOT_FOUND_POST)
+        except post_error.PermissionDeniedDeletePostError:
+            raise exceptions.PermissionDenied(
+                **exception_data.HTTP_403_PERMISSION_DENIED_DELETE_POST
+            )
         return Response(status=status.HTTP_204_NO_CONTENT)

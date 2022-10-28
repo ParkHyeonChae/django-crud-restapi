@@ -1,4 +1,7 @@
-from apps.boards.api.views.comments import CommentListCreate, CommentUpdateDestroy
+from apps.boards.api.views.comments import (
+    CommentListCreate,
+    CommentRetrieveUpdateDestroy,
+)
 from django.urls import path
 
 urlpatterns = [
@@ -7,6 +10,6 @@ urlpatterns = [
     ),
     path(
         "api/v1/boards/<board_id>/posts/<post_id>/comments/<comment_id>",
-        CommentUpdateDestroy.as_view(),
+        CommentRetrieveUpdateDestroy.as_view(),
     ),
 ]

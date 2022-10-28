@@ -1,6 +1,6 @@
 from apps.boards.exceptions import posts as post_error
 from apps.boards.models.posts import Post
-from apps.boards.selectors.posts import get_post_by_id_and_user_id_and_board_id
+from apps.boards.selectors.posts import get_post_by_id_board_id
 from config.celery import app as celery
 from django.db.models import F
 from django.utils import timezone
@@ -28,9 +28,9 @@ def update_post(
 ) -> Post:
     """update post service"""
 
-    post = get_post_by_id_and_user_id_and_board_id(
-        post_id=post_id, user_id=user_id, board_id=board_id
-    )
+    post = get_post_by_id_board_id(post_id=post_id, board_id=board_id)
+    if post.user_id != user_id:
+        raise post_error.PermissionDeniedUpdatePostError
     if title is None:
         raise post_error.RequiredPostTitleError
     if content is None:
@@ -45,9 +45,9 @@ def update_post(
 def delete_post(user_id: int, post_id: int, board_id: int) -> None:
     """delete post service"""
 
-    post = get_post_by_id_and_user_id_and_board_id(
-        post_id=post_id, user_id=user_id, board_id=board_id
-    )
+    post = get_post_by_id_board_id(post_id=post_id, board_id=board_id)
+    if post.user_id != user_id:
+        raise post_error.PermissionDeniedDeletePostError
     post.deleted_at = timezone.now()
     post.save()
     return None

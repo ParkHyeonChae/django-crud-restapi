@@ -17,3 +17,17 @@ class NotFoundPostError(Exception):
 
     def __str__(self):
         return "Not Found Post."
+
+
+class PermissionDeniedUpdatePostError(Exception):
+    """permission denied update post error"""
+
+    def __str__(self):
+        return "Permission Denied Update Post."
+
+
+class PermissionDeniedDeletePostError(Exception):
+    """permission denied delete post error"""
+
+    def __str__(self):
+        return "Permission Denied Delete Post."
