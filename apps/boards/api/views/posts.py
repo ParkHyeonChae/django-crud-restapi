@@ -14,6 +14,7 @@ from apps.boards.services.posts import (
     delete_post,
     update_post,
 )
+from config import exceptions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,7 +28,9 @@ class PostListCreate(APIView):
 
     def perform_authentication(self, request):
         if not self.request.user.is_authenticated:
-            raise exception_data.Http401NotAuthenticatedException
+            raise exceptions.NotAuthenticated(
+                **exception_data.HTTP_401_NOT_AUTHENTICATED
+            )
 
     def get(self, request, *args, **kwrags) -> Response:
         """
@@ -63,7 +66,7 @@ class PostListCreate(APIView):
                 content=self.request.data.get("content", None),
             )
         except (post_error.RequiredPostTitleError, post_error.RequiredPostContentError):
-            raise exception_data.Http400RequiredPostBodyException
+            raise exceptions.BadRequest(**exception_data.HTTP_400_INVALID_POST_BODY)
         return Response(status=status.HTTP_201_CREATED, data=post_serializer(post=post))
 
 
@@ -74,7 +77,9 @@ class PostRetrieveUpdateDestroy(APIView):
 
     def perform_authentication(self, request):
         if not self.request.user.is_authenticated:
-            raise exception_data.Http401NotAuthenticatedException
+            raise exceptions.NotAuthenticated(
+                **exception_data.HTTP_401_NOT_AUTHENTICATED
+            )
 
     def get(self, request, *args, **kwrags) -> Response:
         """
@@ -90,7 +95,7 @@ class PostRetrieveUpdateDestroy(APIView):
             )
             async_update_post_view_count.apply_async([post.id])
         except post_error.NotFoundPostError:
-            raise exception_data.Http404NotFoundPostException
+            raise exceptions.NotFound(**exception_data.HTTP_404_NOT_FOUND_POST)
         return Response(
             status=status.HTTP_200_OK, data=post_with_comment_serializer(post=post)
         )
@@ -112,9 +117,9 @@ class PostRetrieveUpdateDestroy(APIView):
                 content=self.request.data.get("content", None),
             )
         except post_error.NotFoundPostError:
-            raise exception_data.Http404NotFoundPostException
+            raise exceptions.NotFound(**exception_data.HTTP_404_NOT_FOUND_POST)
         except (post_error.RequiredPostTitleError, post_error.RequiredPostContentError):
-            raise exception_data.Http400RequiredPostBodyException
+            raise exceptions.BadRequest(**exception_data.HTTP_400_INVALID_POST_BODY)
         return Response(status=status.HTTP_200_OK, data=post_serializer(post=post))
 
     def delete(self, request, *args, **kwrags) -> Response:
@@ -131,5 +136,5 @@ class PostRetrieveUpdateDestroy(APIView):
                 board_id=int(self.kwargs.get("board_id")),
             )
         except post_error.NotFoundPostError:
-            raise exception_data.Http404NotFoundPostException
+            raise exceptions.NotFound(**exception_data.HTTP_404_NOT_FOUND_POST)
         return Response(status=status.HTTP_204_NO_CONTENT)
