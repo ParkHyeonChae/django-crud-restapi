@@ -84,7 +84,7 @@ class PostRetrieveUpdateDestroy(APIView):
 
     def get(self, request, *args, **kwrags) -> Response:
         """
-        해당 게시판과 게시글 아이디에 해당하는 게시글을 반환합니다.
+        해당 게시판과 게시글 아이디에 해당하는 게시글을 반환하고 조회수를 증가시킵니다.
         Returns:
             200: success
             404: NotFound
