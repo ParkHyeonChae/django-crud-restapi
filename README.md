@@ -1,4 +1,4 @@
 # django-crud-restapi
 
-### crud restpul api with clean code applied to django and drf.
+### crud restful api with clean code applied to django and drf.
 
