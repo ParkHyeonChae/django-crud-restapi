@@ -66,7 +66,7 @@ class CommentListCreate(APIView):
         try:
             comment = create_comment(
                 post_id=int(self.kwargs.get("post_id")),
-                user_id=2,
+                user_id=self.request.user.id,
                 content=self.request.data.get("content", None),
             )
         except comment_error.RequiredCommentContentError:
@@ -115,7 +115,7 @@ class CommentRetrieveUpdateDestroy(APIView):
         """
         try:
             comment = update_comment(
-                user_id=2,
+                user_id=self.request.user.id,
                 comment_id=int(self.kwargs.get("comment_id")),
                 post_id=int(self.kwargs.get("post_id")),
                 board_id=int(self.kwargs.get("board_id")),
@@ -143,7 +143,7 @@ class CommentRetrieveUpdateDestroy(APIView):
         """
         try:
             delete_comment(
-                user_id=2,
+                user_id=self.request.user.id,
                 comment_id=int(self.kwargs.get("comment_id")),
                 post_id=int(self.kwargs.get("post_id")),
                 board_id=int(self.kwargs.get("board_id")),
