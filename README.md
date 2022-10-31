@@ -1,3 +1,4 @@
-# django-reborn-api
+# django-crud-restapi
 
-### django-reborn-web의 리팩토링 및 api 버전
+### crud restful api with clean code applied to django and drf.
+
