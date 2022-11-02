@@ -15,11 +15,19 @@ Including another URLconf
 """
 from apps.boards.api.urls import urlpatterns as board_urls
 from apps.users.api.urls import urlpatterns as user_urls
+from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 ]
 urlpatterns += board_urls
 urlpatterns += user_urls
+
+if settings.DEBUG is True:
+    import debug_toolbar
+
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ]

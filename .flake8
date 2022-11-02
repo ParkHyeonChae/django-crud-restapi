@@ -1,0 +1,14 @@
+[flake8]
+max-complexity = 30
+ignore = E203, E231, E501, E722, W503, B950
+select = C,E,F,W,B,B9,T
+exclude =
+    .git,
+    __pycache__,
+    old,
+    build,
+    dist,
+    */migrations/*,
+    __init__.py,
+    config/settings/*
+count = True

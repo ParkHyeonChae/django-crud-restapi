@@ -1,7 +1,7 @@
 from apps.boards.exceptions import posts as post_error
 from apps.boards.models.posts import Post
 from apps.boards.selectors.posts import get_post_by_id_board_id
-from config.settings.celery import app as celery
+from config.celery import app as celery
 from django.db.models import F
 from django.utils import timezone
 

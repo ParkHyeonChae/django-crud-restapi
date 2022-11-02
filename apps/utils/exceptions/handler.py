@@ -5,6 +5,8 @@ from rest_framework.views import set_rollback
 
 
 def api_exception_handler(exc, context):
+    """custom api exception handler"""
+
     if isinstance(
         exc, (custom_exceptions.APIException, origin_exceptions.APIException)
     ):
