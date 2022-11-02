@@ -15,6 +15,7 @@ LIBRARY_APPS = [
     "rest_framework",
     "rest_framework_jwt",
     "django_extensions",
+    "django_celery_results",
     "corsheaders",
 ]
 
