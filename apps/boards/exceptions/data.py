@@ -1,5 +1,5 @@
 """
-Board APP API Exception Data
+board app api exception data
 """
 
 HTTP_401_NOT_AUTHENTICATED = {
