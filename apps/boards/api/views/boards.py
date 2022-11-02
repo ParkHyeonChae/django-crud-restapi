@@ -1,7 +1,7 @@
 from apps.boards.api.serializers.boards import board_serializer
 from apps.boards.exceptions import data as exception_data
 from apps.boards.selectors.boards import get_board_queryset
-from config import exceptions
+from apps.utils.exceptions import classes as exceptions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView

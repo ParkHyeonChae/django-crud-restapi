@@ -10,7 +10,7 @@ from apps.boards.selectors.comments import (
     get_comment_queryset_by_board_id_and_post_id,
 )
 from apps.boards.services.comments import create_comment, delete_comment, update_comment
-from config import exceptions
+from apps.utils.exceptions import classes as exceptions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView

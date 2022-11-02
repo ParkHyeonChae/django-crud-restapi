@@ -7,5 +7,5 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ),
-    "EXCEPTION_HANDLER": "config.exceptions.api_exception_handler",
+    "EXCEPTION_HANDLER": "apps.utils.exceptions.handler.api_exception_handler",
 }

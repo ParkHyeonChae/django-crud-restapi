@@ -15,7 +15,7 @@ from apps.boards.services.posts import (
     delete_post,
     update_post,
 )
-from config import exceptions
+from apps.utils.exceptions import classes as exceptions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
