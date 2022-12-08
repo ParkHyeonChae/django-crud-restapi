@@ -1,4 +1,3 @@
-# django-crud-restapi
-
-### crud restful api with clean code applied to django and drf.
-
+### CRUD RESTful API with clean code applied to Django and DRF.
+## - Layered Architecture.
+## - Transaction Script Pattern.
